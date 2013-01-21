@@ -1,3 +1,4 @@
+
 /*
  * Copyright 2012 Benjamin Glatzel <benjamin.glatzel@me.com>
  *
@@ -13,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.terasology.miniion.componentsystem.controllers;
 
 import javax.vecmath.Vector3f;
@@ -42,17 +44,16 @@ import org.terasology.miniion.components.MinionBarComponent;
 import org.terasology.miniion.components.MinionComponent;
 import org.terasology.miniion.components.MinionControllerComponent;
 import org.terasology.miniion.components.SimpleMinionAIComponent;
+import org.terasology.miniion.components.UIMinionTestMenu;
 import org.terasology.miniion.componentsystem.entityfactory.MiniionFactory;
 import org.terasology.miniion.events.MinionMessageEvent;
 import org.terasology.miniion.events.ToggleMinionModeButton;
 import org.terasology.miniion.minionenum.MinionBehaviour;
 import org.terasology.miniion.minionenum.MinionMessagePriority;
 import org.terasology.miniion.components.UIMinionBehaviourMenu;
-import org.terasology.miniion.components.UIMinionTestMenu;
 import org.terasology.miniion.utilities.MinionMessage;
+import org.terasology.miniion.utilities.ModIcons;
 import org.terasology.utilities.FastRandom;
-import org.terasology.rendering.gui.framework.UIDisplayElement;
-import org.terasology.rendering.gui.framework.events.FocusListener;
 
 /**
  * Created with IntelliJ IDEA.
@@ -69,23 +70,16 @@ public class MinionSystem implements EventHandlerSystem {
     private static final int POPUP_ENTRIES = 9;
     private static final String BEHAVIOUR_MENU = "minionBehaviour";
     private static final String MENU_TEST = "minionTest";
-
-
+        
     private GUIManager guiManager;
     private UIMinionBehaviourMenu minionMenu;
     private UIMinionTestMenu minionTest;
     private MiniionFactory minionFactory;
     private UIMessageQueue messageQueue;
-    private boolean modal = false;
-    public boolean isModal() {
-        return modal;
-    }
-    public void setModal(boolean modal) {
-        this.modal = modal;
-    }
 
     @Override
     public void initialise() {
+    	ModIcons.loadIcons();
         guiManager = CoreRegistry.get(GUIManager.class);
         minionFactory = new MiniionFactory();
         minionFactory.setEntityManager(CoreRegistry.get(EntityManager.class));
@@ -161,9 +155,9 @@ public class MinionSystem implements EventHandlerSystem {
             wheelEvent.consume();
         }
         if (minionTest != null && minionTest.isVisible()) {
-            menuScroll(wheelEvent.getWheelTurns(), entity);
-            wheelEvent.consume();
-        }
+	       menuScroll(wheelEvent.getWheelTurns(), entity);
+	       wheelEvent.consume();	
+	   }
     }
 
     private void menuScroll(int wheelMoved, EntityRef playerEntity) {
@@ -181,8 +175,8 @@ public class MinionSystem implements EventHandlerSystem {
     }
 
     @ReceiveEvent(components = {LocalPlayerComponent.class, MinionControllerComponent.class}, priority = PRIORITY_LOCAL_PLAYER_OVERRIDE)
-    public void onAttack(AttackButton event, EntityRef entity) {
-        MinionControllerComponent minionController = entity.getComponent(MinionControllerComponent.class);
+    public void onUseItem(UseItemButton event, EntityRef entity) {
+        /*MinionControllerComponent minionController = entity.getComponent(MinionControllerComponent.class);
         if (minionController.minionMode) {
             switch (event.getState()) {
                 case DOWN:
@@ -198,7 +192,7 @@ public class MinionSystem implements EventHandlerSystem {
                     break;
             }
             event.consume();
-        }
+        }*/
     }
 
     public void updateBehaviour(EntityRef player) {

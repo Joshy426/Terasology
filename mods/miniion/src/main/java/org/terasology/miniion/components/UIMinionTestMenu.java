@@ -17,6 +17,7 @@ package org.terasology.miniion.components;
 
 import javax.vecmath.Vector2f;
 
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.terasology.asset.Assets;
 import org.terasology.entitySystem.EntityRef;
@@ -40,6 +41,8 @@ public class UIMinionTestMenu extends UIWindow {
 
     public UIMinionTestMenu() {
         setId("minionTest");
+        setModal(true);
+        setCloseKeys(new int[] {Keyboard.KEY_ESCAPE});
         setSize(new Vector2f(60f, 180f));
         background = new UIImage(Assets.getTexture("engine:guiMinion"));
         background.getTextureSize().set(new Vector2f(60f / 256f, 180f / 256f));
