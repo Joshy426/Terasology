@@ -48,8 +48,11 @@ import org.terasology.miniion.events.ToggleMinionModeButton;
 import org.terasology.miniion.minionenum.MinionBehaviour;
 import org.terasology.miniion.minionenum.MinionMessagePriority;
 import org.terasology.miniion.components.UIMinionBehaviourMenu;
+import org.terasology.miniion.components.UIMinionTestMenu;
 import org.terasology.miniion.utilities.MinionMessage;
 import org.terasology.utilities.FastRandom;
+import org.terasology.rendering.gui.framework.UIDisplayElement;
+import org.terasology.rendering.gui.framework.events.FocusListener;
 
 /**
  * Created with IntelliJ IDEA.
@@ -65,11 +68,21 @@ public class MinionSystem implements EventHandlerSystem {
     private static final int PRIORITY_LOCAL_PLAYER_OVERRIDE = 160;
     private static final int POPUP_ENTRIES = 9;
     private static final String BEHAVIOUR_MENU = "minionBehaviour";
+    private static final String MENU_TEST = "minionTest";
+
 
     private GUIManager guiManager;
     private UIMinionBehaviourMenu minionMenu;
+    private UIMinionTestMenu minionTest;
     private MiniionFactory minionFactory;
     private UIMessageQueue messageQueue;
+    private boolean modal = false;
+    public boolean isModal() {
+        return modal;
+    }
+    public void setModal(boolean modal) {
+        this.modal = modal;
+    }
 
     @Override
     public void initialise() {
@@ -78,6 +91,7 @@ public class MinionSystem implements EventHandlerSystem {
         minionFactory.setEntityManager(CoreRegistry.get(EntityManager.class));
         minionFactory.setRandom(new FastRandom());
         guiManager.registerWindow("minionBehaviour", UIMinionBehaviourMenu.class);
+        guiManager.registerWindow("minionTest", UIMinionTestMenu.class);
     }
 
     @ReceiveEvent(components = {WorldComponent.class})
@@ -111,6 +125,7 @@ public class MinionSystem implements EventHandlerSystem {
         minionController.minionMode = !minionController.minionMode;
         if (!minionController.minionMode) {
             guiManager.closeWindow(BEHAVIOUR_MENU);
+            guiManager.closeWindow(MENU_TEST);
         }
         entity.saveComponent(minionController);
         event.consume();
@@ -145,6 +160,10 @@ public class MinionSystem implements EventHandlerSystem {
             menuScroll(wheelEvent.getWheelTurns(), entity);
             wheelEvent.consume();
         }
+        if (minionTest != null && minionTest.isVisible()) {
+            menuScroll(wheelEvent.getWheelTurns(), entity);
+            wheelEvent.consume();
+        }
     }
 
     private void menuScroll(int wheelMoved, EntityRef playerEntity) {
@@ -168,9 +187,11 @@ public class MinionSystem implements EventHandlerSystem {
             switch (event.getState()) {
                 case DOWN:
                     minionMenu = (UIMinionBehaviourMenu) guiManager.openWindow(BEHAVIOUR_MENU);
+                    minionTest = (UIMinionTestMenu) guiManager.openWindow(MENU_TEST);
                     break;
                 case UP:
                     minionMenu.setVisible(false);
+                    minionTest.setVisible(false);
                     updateBehaviour(entity);
                     break;
                 default:
